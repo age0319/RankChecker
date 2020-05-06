@@ -1,39 +1,49 @@
-from urllib.parse import urlparse
-from googlesearch import search
+import os
+import pandas as pd
+import check_ranking
 
-query = 'django 画像 アップロード'
+query = 'ubuntu　ipアドレス　固定'
 your_site_domain = 'https://ymgsapo.com'
+file_name = "ranking.pkl"
 
-## 日本語のGoogle検索を行う。言語は日本語。１ページあたりの検索数は10個,50個検索して止める。
-search_result_list = list(search(query, lang="jp", num=10, stop=50, pause=1))
+print("---start---:::", query)
 
-domain_list=[]
-for index, url in enumerate(search_result_list):
-    # URLからドメインを抽出してリストに格納する
-    parsed_uri = urlparse(url)
-    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    domain_list.append(domain)
-    print(index,url)
+if os.path.exists(file_name):
+    print(pd.read_pickle(file_name))
 
-print(domain_list)
-
-# 重複を無くす
-unique_domain_list = list(dict.fromkeys(domain_list))
-
-print(unique_domain_list)
-
-
-# リストの中から自分のブログのドメインのインデックスを返す。
-# 見つからなかった場合にはFalseを返す
-def my_index(l, x, default=False):
-    if x in l:
-        return l.index(x)
-    else:
-        return default
-
-
-if my_index(unique_domain_list, your_site_domain) is not False:
-    ranking = my_index(unique_domain_list, your_site_domain) + 1
-    print("Your site ranking is:", ranking, "!!!")
+# 初回検索の場合
+if not os.path.exists(file_name):
+    # Create
+    print("Create")
+    ranking_dict = check_ranking.reg_ranking_by_query(query, your_site_domain)
+    df = pd.DataFrame({'SearchTerm': [query],
+                       'Ranking(Domain)': ranking_dict['Ranking(Domain)'],
+                       'Ranking(URL)': ranking_dict['Ranking(URL)']
+                       }
+                      )
+    df.to_pickle(file_name)
 else:
-    print("Hmm...Ranking Out")
+    df = pd.read_pickle(file_name)
+
+    if df[df["SearchTerm"] == query].empty:
+        # Add
+        print("Add")
+        ranking_dict = check_ranking.reg_ranking_by_query(query, your_site_domain)
+        df2 = pd.DataFrame({'SearchTerm': [query],
+                           'Ranking(Domain)': ranking_dict['Ranking(Domain)'],
+                           'Ranking(URL)': ranking_dict['Ranking(URL)']
+                           }
+                          )
+        df.append(df2, ignore_index=True).to_pickle(file_name)
+    else:
+        # Update
+        print("Update")
+        index = df[df["SearchTerm"] == query].index
+        ranking_dict = check_ranking.reg_ranking_by_query(query, your_site_domain)
+
+        df.loc[index, 'Ranking(Domain)'] = ranking_dict['Ranking(Domain)']
+        df.loc[index, 'Ranking(URL)'] = ranking_dict['Ranking(URL)']
+        df.to_pickle(file_name)
+
+print("---finish---")
+print(pd.read_pickle(file_name))
