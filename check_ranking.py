@@ -59,7 +59,7 @@ def add_update_pickle(query, your_site_domain, file_name):
 
     # 初回検索の場合
     if not os.path.exists(file_name):
-        # Create
+        # データフレームを新しく作って保存する
         print("Create")
         ranking_dict = calc_ranking_by_query(query, your_site_domain)
         df = pd.DataFrame({'SearchTerm': [query],
