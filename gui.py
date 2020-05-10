@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-from check_ranking import Search
+from check_ranking import DataFrameHandler
 
 
 class RankCheckerGUI:
@@ -9,7 +9,8 @@ class RankCheckerGUI:
         self.filename = "ranking.pkl"
         self.domain = "ymgsapo.com"
 
-        self.selected = []
+        self.selected_no = []
+        self.selected_query = []
 
         self.base = tk.Tk()
         self.base.title("RankChecker")
@@ -19,25 +20,35 @@ class RankCheckerGUI:
         self.entryBox = tk.Entry(master=self.base)
         self.entryBox.pack()
 
-        # ボタン
+        # 追加ボタン
         self.button1 = tk.Button(
             master=self.base,
-            text="Button",  # 初期値
+            text="追加",  # 初期値
             width=15,  # 幅
             bg="lightblue",  # 色
-            command=self.query_click  # クリックに実行する関数
+            command=self.add_click  # クリックに実行する関数
         )
         self.button1.pack()
 
         # 削除ボタン
         self.button2 = tk.Button(
             master=self.base,
-            text="Button",  # 初期値
+            text="削除",  # 初期値
             width=15,  # 幅
             bg="lightblue",  # 色
-            command=self.remove_click  # クリックに実行する関数
+            command=self.delete_click  # クリックに実行する関数
         )
         self.button2.pack()
+
+        # 更新ボタン
+        self.button3 = tk.Button(
+            master=self.base,
+            text="更新",  # 初期値
+            width=15,  # 幅
+            bg="lightblue",  # 色
+            command=self.update_click  # クリックに実行する関数
+        )
+        self.button3.pack()
 
         # TreeViewの設定
         self.tree = ttk.Treeview(self.base)
@@ -73,51 +84,48 @@ class RankCheckerGUI:
         self.base.mainloop()
 
     def on_tree_select(self, event):
-        self.selected = []
+        self.selected_no = []
+        self.selected_query = []
+
         for item in self.tree.selection():
             item_text = self.tree.item(item, "values")
-            self.selected.append(item_text[0])
-        print(self.selected)
+            self.selected_no.append(int(item_text[0]))
+            self.selected_query.append(item_text[1])
 
-    def query_click(self):
+    def load_pkl_insert_treeview(self):
+        # 保存したデータフレームの読み込み
+        df = pd.read_pickle(self.filename)
+
+        # 全データ挿入
+        for i in df.index:
+            self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Total'][i],
+                                                df['TargetSite'][i], df['Date'][i]))
+
+    def add_click(self):
         # 検索語を取得
         query = self.entryBox.get()
 
         # ランキングを検索
-        sr = Search(query, self.domain, self.filename)
-        sr.search_term()
+        handler = DataFrameHandler(query, self.domain, self.filename)
+        handler.add()
 
-        # ツリービューの削除
-        for i in self.tree.get_children():
-            self.tree.delete(i)
+        self.refresh()
 
-        self.load_pkl_insert_treeview()
+    def delete_click(self):
 
-    def load_pkl_insert_treeview(self):
-        # 保存したデータフレームの読み込み
-        self.df = pd.read_pickle(self.filename)
+        handler = DataFrameHandler(filename=self.filename)
+        handler.delete(self.selected_no)
 
-        # 全データ挿入
-        for i in range(self.df.index.stop):
-            self.tree.insert("", "end", values=(i, self.df['SearchTerm'][i], self.df['Ranking'][i], self.df['Total'][i],
-                                                self.df['TargetSite'][i], self.df['Date'][i]))
+        self.refresh()
 
-    def remove_click(self):
+    def update_click(self):
 
-        print("hoge")
-        # 保存したデータフレームの読み込み
-        df = pd.read_pickle(self.filename)
+        handler = DataFrameHandler(self.selected_query[0], self.domain, self.filename)
+        handler.update(self.selected_no[0])
 
-        # strで取れるため、intへの変換が必要
-        self.selected = list(map((lambda x: int(x)), self.selected))
+        self.refresh()
 
-        print(self.selected)
-
-        df.drop(df.index[self.selected], inplace=True)
-        df.reset_index(inplace=True, drop=True)
-        df.to_pickle(self.filename)
-
-        print(df)
+    def refresh(self):
         # ツリービューの削除
         for i in self.tree.get_children():
             self.tree.delete(i)
