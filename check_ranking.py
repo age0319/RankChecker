@@ -27,7 +27,7 @@ class DataFrameHandler:
         index = clean_df[clean_df.urls.str.contains(self.domain)].index.to_list()
 
         if not index:
-            rank = "Out of ranking"
+            rank = "50+"
             total = 0
         else:
             # インデックスに＋１をする
