@@ -73,10 +73,11 @@ class RankCheckerGUI:
         self.base.mainloop()
 
     def on_tree_select(self, event):
-        print("selected items:")
+        self.selected = []
         for item in self.tree.selection():
             item_text = self.tree.item(item, "values")
-            print(item_text[0])
+            self.selected.append(item_text[0])
+        print(self.selected)
 
     def query_click(self):
         # 検索語を取得
@@ -109,6 +110,8 @@ class RankCheckerGUI:
 
         # strで取れるため、intへの変換が必要
         self.selected = list(map((lambda x: int(x)), self.selected))
+
+        print(self.selected)
 
         df.drop(df.index[self.selected], inplace=True)
         df.reset_index(inplace=True, drop=True)
