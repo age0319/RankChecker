@@ -9,6 +9,8 @@ class RankCheckerGUI:
         self.filename = "ranking.pkl"
         self.domain = "ymgsapo.com"
 
+        self.selected = []
+
         self.base = tk.Tk()
         self.base.title("RankChecker")
         self.base.geometry("800x800")
@@ -26,6 +28,16 @@ class RankCheckerGUI:
             command=self.query_click  # クリックに実行する関数
         )
         self.button1.pack()
+
+        # 削除ボタン
+        self.button2 = tk.Button(
+            master=self.base,
+            text="Button",  # 初期値
+            width=15,  # 幅
+            bg="lightblue",  # 色
+            command=self.remove_click  # クリックに実行する関数
+        )
+        self.button2.pack()
 
         # TreeViewの設定
         self.tree = ttk.Treeview(self.base)
@@ -56,7 +68,7 @@ class RankCheckerGUI:
         # 選択されたTreeviewを取得するための関数をバインド
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
-        self.load_from_pkl()
+        self.load_pkl_insert_treeview()
 
         self.base.mainloop()
 
@@ -78,9 +90,9 @@ class RankCheckerGUI:
         for i in self.tree.get_children():
             self.tree.delete(i)
 
-        self.load_from_pkl()
+        self.load_pkl_insert_treeview()
 
-    def load_from_pkl(self):
+    def load_pkl_insert_treeview(self):
         # 保存したデータフレームの読み込み
         self.df = pd.read_pickle(self.filename)
 
@@ -88,6 +100,26 @@ class RankCheckerGUI:
         for i in range(self.df.index.stop):
             self.tree.insert("", "end", values=(i, self.df['SearchTerm'][i], self.df['Ranking'][i], self.df['Total'][i],
                                                 self.df['TargetSite'][i], self.df['Date'][i]))
+
+    def remove_click(self):
+
+        print("hoge")
+        # 保存したデータフレームの読み込み
+        df = pd.read_pickle(self.filename)
+
+        # strで取れるため、intへの変換が必要
+        self.selected = list(map((lambda x: int(x)), self.selected))
+
+        df.drop(df.index[self.selected], inplace=True)
+        df.reset_index(inplace=True, drop=True)
+        df.to_pickle(self.filename)
+
+        print(df)
+        # ツリービューの削除
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+
+        self.load_pkl_insert_treeview()
 
 
 if __name__ == "__main__":
