@@ -30,14 +30,14 @@ class DataFrameHandler:
         else:
             rank = index[0] + 1
 
-        dt_now = datetime.datetime.now()
+        now = datetime.datetime.now()
 
         self.ranking_dict = {'SearchTerm': self.query,
                              'Ranking': rank,
                              'Pre': None,
                              'Diff': None,
                              'TargetSite': self.domain,
-                             'Date': dt_now
+                             'Date': now.strftime("%Y/%m/%d %X")
                              }
 
     def create(self):
