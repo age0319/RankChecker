@@ -1,5 +1,4 @@
 from googlesearch import search
-import os
 import datetime
 import pandas as pd
 
@@ -28,33 +27,34 @@ class DataFrameHandler:
 
         if not index:
             rank = "50+"
-            total = 0
         else:
-            # インデックスに＋１をする
-            rank = [n + 1 for n in index]
-            total = len(rank)
+            rank = index[0] + 1
 
         dt_now = datetime.datetime.now()
 
         self.ranking_dict = {'SearchTerm': self.query,
                              'Ranking': rank,
-                             'Total': total,
+                             'Pre': None,
+                             'Diff': None,
                              'TargetSite': self.domain,
                              'Date': dt_now
                              }
+
+    def create(self):
+        self.search_term()
+        print(self.ranking_dict)
+        df = pd.DataFrame(self.ranking_dict, index=[0])
+        df.to_pickle(self.filename)
 
     def add(self):
 
         self.search_term()
 
-        data = pd.DataFrame(self.ranking_dict)
+        df = pd.read_pickle(self.filename)
 
-        if not os.path.exists(self.filename):
-            df = pd.DataFrame()
-        else:
-            df = pd.read_pickle(self.filename)
+        add_df = pd.DataFrame(self.ranking_dict, index=[0])
 
-        df = df.append(data)
+        df = df.append(add_df)
 
         df.reset_index(drop=True, inplace=True)
 
@@ -62,12 +62,21 @@ class DataFrameHandler:
 
     def update(self, index):
 
-        self.search_term()
-
         df = pd.read_pickle(self.filename)
 
-        df.loc[index] = [self.query, self.ranking_dict["Ranking"], self.ranking_dict["Total"], self.domain,
-                         self.ranking_dict["Date"]]
+        pre = df.loc[index, "Ranking"]
+
+        self.search_term()
+
+        new = self.ranking_dict["Ranking"]
+
+        df.loc[index, "Ranking"] = new
+        df.loc[index, "Pre"] = pre
+
+        if (isinstance(new, int) == True) & (isinstance(pre, int) == True):
+            df.loc[index, "Diff"] = pre - new
+        else:
+            df.loc[index, "Diff"] = None
 
         df.to_pickle(self.filename)
 

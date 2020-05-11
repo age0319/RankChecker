@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
@@ -54,16 +55,17 @@ class RankCheckerGUI:
         self.tree = ttk.Treeview(self.base)
 
         # 列を作る
-        self.tree["column"] = (1, 2, 3, 4, 5, 6)
+        self.tree["column"] = (1, 2, 3, 4, 5, 6, 7)
         self.tree["show"] = "headings"
 
         # ヘッダーテキスト
         self.tree.heading(1, text="No.")
         self.tree.heading(2, text="検索ワード")
         self.tree.heading(3, text="ランキング")
-        self.tree.heading(4, text="数")
-        self.tree.heading(5, text="ドメイン")
-        self.tree.heading(6, text="時間")
+        self.tree.heading(4, text="前回")
+        self.tree.heading(5, text="差分")
+        self.tree.heading(6, text="ドメイン")
+        self.tree.heading(7, text="時間")
 
         # 列の幅
         self.tree.column(1, width=10)
@@ -72,6 +74,7 @@ class RankCheckerGUI:
         self.tree.column(4, width=10)
         self.tree.column(5, width=50)
         self.tree.column(6, width=50)
+        self.tree.column(7, width=50)
 
         # ツリービューの設置
         self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
@@ -93,21 +96,33 @@ class RankCheckerGUI:
             self.selected_query.append(item_text[1])
 
     def load_pkl_insert_treeview(self):
+
         # 保存したデータフレームの読み込み
         df = pd.read_pickle(self.filename)
 
-        # 全データ挿入
-        for i in df.index:
-            self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Total'][i],
-                                                df['TargetSite'][i], df['Date'][i]))
+        if df.empty:
+            pass
+        else:
+            # 全データ挿入
+            for i in df.index:
+                self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Pre'][i], df['Diff'][i],
+                                                    df['TargetSite'][i], df['Date'][i]))
 
     def add_click(self):
+
         # 検索語を取得
         query = self.entryBox.get()
 
         # ランキングを検索
         handler = DataFrameHandler(query, self.domain, self.filename)
-        handler.add()
+
+        df = pd.read_pickle(self.filename)
+
+        if df.empty:
+            print('DataFrame is empty!')
+            handler.create()
+        else:
+            handler.add()
 
         self.refresh()
 
