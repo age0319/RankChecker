@@ -1,7 +1,7 @@
 from googlesearch import search
 import datetime
 import pandas as pd
-
+from urllib.error import HTTPError
 
 class DataFrameHandler:
 
@@ -13,8 +13,11 @@ class DataFrameHandler:
 
     def search_term(self):
 
-        # 日本語のGoogle検索を行う。言語は日本語。１ページあたりの検索数は10個,50個検索して止める。
-        search_result_list = list(search(self.query, lang="jp", num=10, stop=50, pause=1))
+        try:
+            # 日本語のGoogle検索を行う。言語は日本語。１ページあたりの検索数は10個,50個検索して止める。
+            search_result_list = list(search(self.query, lang="jp", num=10, stop=50, pause=1))
+        except HTTPError:
+            return -1
 
         # URLリストをデータフレームに格納する
         df = pd.DataFrame(search_result_list, columns=["urls"])
@@ -40,15 +43,22 @@ class DataFrameHandler:
                              'Date': now.strftime("%Y/%m/%d %X")
                              }
 
+        return
+
     def create(self):
-        self.search_term()
-        print(self.ranking_dict)
+
+        if self.search_term() == -1:
+            print("Too Many Requests")
+            return
+
         df = pd.DataFrame(self.ranking_dict, index=[0])
         df.to_pickle(self.filename)
 
     def add(self):
 
-        self.search_term()
+        if self.search_term() == -1:
+            print("Too Many Requests")
+            return
 
         df = pd.read_pickle(self.filename)
 
@@ -62,13 +72,14 @@ class DataFrameHandler:
 
     def update(self, index):
 
-        df = pd.read_pickle(self.filename)
-
-        pre = df.loc[index, "Ranking"]
-
-        self.search_term()
+        if self.search_term() == -1:
+            print("Too Many Requests")
+            return
 
         new = self.ranking_dict["Ranking"]
+
+        df = pd.read_pickle(self.filename)
+        pre = df.loc[index, "Ranking"]
 
         df.loc[index, "Ranking"] = new
         df.loc[index, "Pre"] = pre
