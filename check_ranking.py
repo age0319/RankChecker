@@ -83,6 +83,7 @@ class DataFrameHandler:
 
         df.loc[index, "Ranking"] = new
         df.loc[index, "Pre"] = pre
+        df.loc[index, "Date"] = self.ranking_dict["Date"]
 
         if (isinstance(new, int) == True) & (isinstance(pre, int) == True):
             df.loc[index, "Diff"] = pre - new
