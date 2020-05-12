@@ -3,6 +3,7 @@ import datetime
 import pandas as pd
 from urllib.error import HTTPError
 
+
 class DataFrameHandler:
 
     def __init__(self, query="", domain="", filename=""):
