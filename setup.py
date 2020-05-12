@@ -12,6 +12,7 @@ DATA_FILES = ['ranking.pkl']
 # OPTIONS = {}
 
 OPTIONS = {'argv_emulation': True,
+           'iconfile': '/Users/agematsuharunobu/PycharmProjects/google-search/icon/Jamespeng-Movie-Ranking.icns',
            'plist': {
                'PyRuntimeLocations': [
                 '@executable_path/../Frameworks/libpython3.7m.dylib',
