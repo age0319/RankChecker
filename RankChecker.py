@@ -2,12 +2,16 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 from DFH import DataFrameHandler
+from Launcher import DomainRegister
+import os
+from config import *
 
 
 class RankCheckerGUI:
-    def __init__(self):
-        self.filename = "ranking.pkl"
-        self.domain = "ymgsapo.com"
+    def __init__(self, domain):
+
+        self.domain = domain
+        self.filename = DATA_PATH + domain + ".pkl"
 
         self.selected_no = []
         self.selected_query = []
@@ -15,6 +19,10 @@ class RankCheckerGUI:
         self.base = tk.Tk()
         self.base.title("RankChecker")
         self.base.geometry("800x800")
+
+        # ラベル
+        label = tk.Label(self.base, text="【" + self.domain + "】の順位を調べます。")
+        label.pack()
 
         # テキストボックス
         self.entryBox = tk.Entry(master=self.base)
@@ -96,6 +104,9 @@ class RankCheckerGUI:
 
     def load_pkl_insert_treeview(self):
 
+        if not os.path.exists(self.filename):
+            return
+
         # 保存したデータフレームの読み込み
         df = pd.read_pickle(self.filename)
 
@@ -129,10 +140,8 @@ class RankCheckerGUI:
         # ランキングを検索
         handler = DataFrameHandler(query, self.domain, self.filename)
 
-        df = pd.read_pickle(self.filename)
-
-        if df.empty:
-            print('DataFrame is empty!')
+        if not os.path.exists(self.filename):
+            print("This is the 1st Search")
             handler.create()
         else:
             handler.add()
@@ -164,4 +173,11 @@ class RankCheckerGUI:
 
 
 if __name__ == "__main__":
-    app = RankCheckerGUI()
+
+    if not os.path.exists(SETTINGS_FILE):
+        app = DomainRegister()
+    else:
+        with open(SETTINGS_FILE, 'r') as f:
+            domain = f.readlines()
+
+        app = RankCheckerGUI(domain[0].rstrip())
