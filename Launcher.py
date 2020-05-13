@@ -1,7 +1,8 @@
 import tkinter as tk
 from config import *
 
-class DomainRegister:
+
+class DomainRegisterGUI:
     def __init__(self):
 
         self.base = tk.Tk()
@@ -34,4 +35,4 @@ class DomainRegister:
         with open(SETTINGS_FILE, 'w') as f:
             print(domain, file=f)
 
-
+        self.base.destroy()

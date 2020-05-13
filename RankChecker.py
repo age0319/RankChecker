@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 from DFH import DataFrameHandler
-from Launcher import DomainRegister
+from Launcher import DomainRegisterGUI
 import os
 from config import *
 
@@ -175,7 +175,7 @@ class RankCheckerGUI:
 if __name__ == "__main__":
 
     if not os.path.exists(SETTINGS_FILE):
-        app = DomainRegister()
+        app = DomainRegisterGUI()
     else:
         with open(SETTINGS_FILE, 'r') as f:
             domain = f.readlines()
