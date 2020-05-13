@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-from check_ranking import DataFrameHandler
+from DFH import DataFrameHandler
 
 
 class RankCheckerGUI:
