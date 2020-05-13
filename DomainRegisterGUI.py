@@ -1,6 +1,7 @@
 import tkinter as tk
 from config import *
 from RankCheckerGUI import RankCheckerGUI
+from PIL import Image, ImageTk
 
 
 class DomainRegisterGUI:
@@ -8,6 +9,13 @@ class DomainRegisterGUI:
 
         self.base = tk.Tk()
         self.base.title("Launcher")
+
+        # 画像を配置する
+        load = Image.open(IMAGE_PATH)
+        render = ImageTk.PhotoImage(load)
+        img = tk.Label(self.base, image=render)
+        img.image = render
+        img.pack()
 
         # ラベル
         label = tk.Label(self.base, text="順位を調べたいサイトのドメインを入力してください。(例:myblog.com)")
