@@ -137,6 +137,8 @@ class RankCheckerGUI:
         else:
             handler.add()
 
+        self.entryBox.delete(0, 'end')
+
         self.refresh()
 
     def delete_click(self):
