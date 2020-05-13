@@ -1,9 +1,8 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-from DFH import DataFrameHandler
-from Launcher import DomainRegisterGUI
-import os
+from DataFrameHandler import DataFrameHandler
 from config import *
 
 
@@ -171,13 +170,3 @@ class RankCheckerGUI:
 
         self.load_pkl_insert_treeview()
 
-
-if __name__ == "__main__":
-
-    if not os.path.exists(SETTINGS_FILE):
-        app = DomainRegisterGUI()
-    else:
-        with open(SETTINGS_FILE, 'r') as f:
-            domain = f.readlines()
-
-        app = RankCheckerGUI(domain[0].rstrip())

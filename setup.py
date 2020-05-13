@@ -7,7 +7,7 @@ Usage:
 
 from setuptools import setup
 
-APP = ['RankChecker.py']
+APP = ['RankCheckerGUI.py']
 DATA_FILES = ['ranking.pkl']
 # OPTIONS = {}
 

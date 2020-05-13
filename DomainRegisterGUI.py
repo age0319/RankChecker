@@ -1,5 +1,6 @@
 import tkinter as tk
 from config import *
+from RankCheckerGUI import RankCheckerGUI
 
 
 class DomainRegisterGUI:
@@ -36,3 +37,5 @@ class DomainRegisterGUI:
             print(domain, file=f)
 
         self.base.destroy()
+
+        app = RankCheckerGUI(domain)
