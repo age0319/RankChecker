@@ -100,12 +100,26 @@ class RankCheckerGUI:
         df = pd.read_pickle(self.filename)
 
         if df.empty:
-            pass
-        else:
-            # 全データ挿入
-            for i in df.index:
-                self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Pre'][i], df['Diff'][i],
-                                                    df['TargetSite'][i], df['Date'][i]))
+            return
+
+        for i in df.index:
+            diff = df.loc[i, "Diff"]
+
+            color = ""
+            if diff is None:
+                pass
+            elif isinstance(diff, str):
+                pass
+            elif diff > 0:
+                color = "green"
+            elif diff < 0:
+                color = "red"
+
+            self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Pre'][i], df['Diff'][i],
+                                     df['TargetSite'][i], df['Date'][i]), tags=color)
+
+        self.tree.tag_configure("red", foreground='red')
+        self.tree.tag_configure("green", foreground='green')
 
     def add_click(self):
 
