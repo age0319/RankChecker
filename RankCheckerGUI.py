@@ -7,10 +7,9 @@ from config import *
 
 
 class RankCheckerGUI:
-    def __init__(self, domain):
+    def __init__(self):
 
-        self.domain = domain
-        self.filename = DATA_PATH + domain + ".pkl"
+        settings = load_obj()
 
         self.selected_no = []
         self.selected_query = []
@@ -20,7 +19,7 @@ class RankCheckerGUI:
         self.base.geometry("800x800")
 
         # ラベル
-        label = tk.Label(self.base, text="【" + self.domain + "】の順位を調べます。")
+        label = tk.Label(self.base, text="【" + settings["domain"] + "】の順位を調べます。")
         label.pack()
 
         # テキストボックス
@@ -103,11 +102,11 @@ class RankCheckerGUI:
 
     def load_pkl_insert_treeview(self):
 
-        if not os.path.exists(self.filename):
+        if not os.path.exists(RANKINGS_FILE):
             return
 
         # 保存したデータフレームの読み込み
-        df = pd.read_pickle(self.filename)
+        df = pd.read_pickle(RANKINGS_FILE)
 
         if df.empty:
             return
@@ -137,9 +136,9 @@ class RankCheckerGUI:
         query = self.entryBox.get()
 
         # ランキングを検索
-        handler = DataFrameHandler(query, self.domain, self.filename)
+        handler = DataFrameHandler(query)
 
-        if not os.path.exists(self.filename):
+        if not os.path.exists(RANKINGS_FILE):
             print("This is the 1st Search")
             handler.create()
         else:
@@ -151,14 +150,14 @@ class RankCheckerGUI:
 
     def delete_click(self):
 
-        handler = DataFrameHandler(filename=self.filename)
+        handler = DataFrameHandler()
         handler.delete(self.selected_no)
 
         self.refresh()
 
     def update_click(self):
 
-        handler = DataFrameHandler(self.selected_query[0], self.domain, self.filename)
+        handler = DataFrameHandler(self.selected_query[0])
         handler.update(self.selected_no[0])
 
         self.refresh()

@@ -2,21 +2,26 @@ from googlesearch import search
 import datetime
 import pandas as pd
 from urllib.error import HTTPError
+from config import *
 
 
 class DataFrameHandler:
 
-    def __init__(self, query="", domain="", filename=""):
+    def __init__(self, query=""):
+
+        settings = load_obj()
+
         self.query = query
-        self.domain = domain
-        self.filename = filename
+        self.domain = settings["domain"]
+        self.lang = settings["lang"]
+        self.filename = RANKINGS_FILE
         self.ranking_dict = {}
 
     def search_term(self):
 
         try:
             # 日本語のGoogle検索を行う。言語は日本語。１ページあたりの検索数は10個,50個検索して止める。
-            search_result_list = list(search(self.query, lang="jp", num=10, stop=50, pause=1))
+            search_result_list = list(search(self.query, lang=self.lang, num=10, stop=50, pause=1))
         except HTTPError:
             return -1
 

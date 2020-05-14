@@ -25,6 +25,18 @@ class DomainRegisterGUI:
         self.entryBox = tk.Entry(master=self.base)
         self.entryBox.pack()
 
+
+
+        # ラベル
+        label = tk.Label(self.base, text="検索エンジンの言語を選んでください。")
+        label.pack()
+
+        self.var = tk.StringVar()
+        r1 = tk.Radiobutton(self.base, text='Japanese', variable=self.var, value='jp')
+        r1.pack()
+        r2 = tk.Radiobutton(self.base, text='English', variable=self.var, value='en')
+        r2.pack()
+
         # ドメインの登録ボタン
         self.button1 = tk.Button(
             master=self.base,
@@ -39,11 +51,16 @@ class DomainRegisterGUI:
         self.base.mainloop()
 
     def register_domain(self):
+
+        lang = self.var.get()
         domain = self.entryBox.get()
 
-        with open(SETTINGS_FILE, 'w') as f:
-            print(domain, file=f)
+        d = {
+            "lang": lang,
+            "domain": domain
+             }
 
-        self.base.destroy()
+        save_obj(d)
 
-        app = RankCheckerGUI(domain)
+        # self.base.destroy()
+        # app = RankCheckerGUI(domain)
