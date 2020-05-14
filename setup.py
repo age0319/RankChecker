@@ -7,18 +7,27 @@ Usage:
 
 from setuptools import setup
 
-APP = ['RankCheckerGUI.py']
-DATA_FILES = ['ranking.pkl']
+APP = ['main.py']
+APP_NAME = "RankChecker"
+DATA_FILES = []
 # OPTIONS = {}
 
 OPTIONS = {'argv_emulation': True,
            'iconfile': '/Users/agematsuharunobu/PycharmProjects/google-search/icon/Jamespeng-Movie-Ranking.icns',
            'plist': {
-               'PyRuntimeLocations': [
+            'CFBundleName': APP_NAME,
+            'CFBundleDisplayName': APP_NAME,
+            'CFBundleGetInfoString': "Making RankChecker",
+            'CFBundleIdentifier': "",
+            'CFBundleVersion': "0.1.0",
+            'CFBundleShortVersionString': "0.1.0",
+            'NSHumanReadableCopyright': "Copyright © 2020, Harunobu Agematsu, All Rights Reserved",
+            'PyRuntimeLocations': [
                 '@executable_path/../Frameworks/libpython3.7m.dylib',
                 '/opt/anaconda3/lib/libpython3.7m.dylib'
                ]
-           }}
+           }
+           }
 
 setup(
     app=APP,
