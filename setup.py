@@ -9,11 +9,10 @@ from setuptools import setup
 
 APP = ['main.py']
 APP_NAME = "RankChecker"
-DATA_FILES = []
-# OPTIONS = {}
+DATA_FILES = ['icon/ranking-icon.png']
 
 OPTIONS = {'argv_emulation': True,
-           'iconfile': '/Users/agematsuharunobu/PycharmProjects/google-search/icon/Jamespeng-Movie-Ranking.icns',
+           'iconfile': 'icon/Jamespeng-Movie-Ranking.icns',
            'plist': {
             'CFBundleName': APP_NAME,
             'CFBundleDisplayName': APP_NAME,
@@ -21,7 +20,7 @@ OPTIONS = {'argv_emulation': True,
             'CFBundleIdentifier': "",
             'CFBundleVersion': "0.1.0",
             'CFBundleShortVersionString': "0.1.0",
-            'NSHumanReadableCopyright': "Copyright © 2020, Harunobu Agematsu, All Rights Reserved",
+            'NSHumanReadableCopyright': "Copyright © 2020, Nokkun, All Rights Reserved",
             'PyRuntimeLocations': [
                 '@executable_path/../Frameworks/libpython3.7m.dylib',
                 '/opt/anaconda3/lib/libpython3.7m.dylib'

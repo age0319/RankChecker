@@ -62,5 +62,5 @@ class DomainRegisterGUI:
 
         save_obj(d)
 
-        # self.base.destroy()
-        # app = RankCheckerGUI(domain)
+        self.base.destroy()
+        app = RankCheckerGUI()
