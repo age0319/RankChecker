@@ -82,17 +82,17 @@ class DataFrameHandler:
             print("Too Many Requests")
             return
 
-        new = self.ranking_dict["Ranking"]
+        new_rank = self.ranking_dict["Ranking"]
 
         df = pd.read_pickle(self.filename)
-        pre = df.loc[index, "Ranking"]
+        pre_rank = df.loc[index, "Ranking"]
 
-        df.loc[index, "Ranking"] = new
-        df.loc[index, "Pre"] = pre
+        df.loc[index, "Ranking"] = new_rank
+        df.loc[index, "Pre"] = pre_rank
         df.loc[index, "Date"] = self.ranking_dict["Date"]
 
-        if (isinstance(new, int) == True) & (isinstance(pre, int) == True):
-            df.loc[index, "Diff"] = pre - new
+        if (isinstance(new_rank, int)) & (isinstance(pre_rank, int)):
+            df.loc[index, "Diff"] = pre_rank - new_rank
         else:
             df.loc[index, "Diff"] = None
 
@@ -107,4 +107,3 @@ class DataFrameHandler:
         df.reset_index(inplace=True, drop=True)
 
         df.to_pickle(self.filename)
-

@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 from PIL import ImageTk, Image
-
 from DataFrameHandler import DataFrameHandler
 from config import *
 
@@ -13,19 +12,18 @@ class RankCheckerGUI:
     def __init__(self):
 
         self.counter = 0
-        self.selected_no = []
-        self.selected_query = []
+        self.selected_no = ""
+        self.selected_query = ""
 
         self.base = tk.Tk()
+        self.domain_label = tk.Label(self.base)
+        self.lang_label = tk.Label(self.base)
         self.tree = ttk.Treeview(self.base)
-        self.entryBox = tk.Entry(self.base)
-
-        self.labeltext = ""
-        self.labeltext2 = ""
+        self.query_entry = tk.Entry(self.base)
 
         self.window = None
+        self.domain_entry = None
         self.lang = None
-        self.entryBox2 = None
 
     def main_window(self):
 
@@ -33,63 +31,59 @@ class RankCheckerGUI:
         self.base.geometry("800x800")
 
         # 設定ボタン
-        button4 = tk.Button(
+        setting_button = tk.Button(
             master=self.base,
-            text="設定",  # 初期値
-            width=15,  # 幅
-            bg="lightblue",  # 色
-            command=self.setting_window  # クリックに実行する関数
+            text="設定",
+            width=15,
+            bg="lightblue",
+            command=self.setting_window
         )
 
-        button4.pack()
+        setting_button.pack()
 
         settings = load_obj()
 
-        self.labeltext = settings["domain"]
-        self.labeltext2 = settings["lang"]
-
         # ラベル
-        label = tk.Label(self.base, text="【" + self.labeltext + "】の順位を調べます。")
-        label.pack()
+        self.domain_label["text"] = "【" + settings["domain"] + "】の順位を調べます。"
+        self.domain_label.pack()
 
-        label2 = tk.Label(self.base, text="検索エンジンの言語【" + self.labeltext2 + "】")
-        label2.pack()
+        self.lang_label["text"] = "検索エンジンの言語【" + settings["lang"] + "】"
+        self.lang_label.pack()
 
         # テキストボックス
-        self.entryBox.pack()
+        self.query_entry.pack()
 
         # 追加ボタン
-        button1 = tk.Button(
+        add_button = tk.Button(
             master=self.base,
-            text="追加",  # 初期値
-            width=15,  # 幅
-            bg="lightblue",  # 色
-            command=self.add_click  # クリックに実行する関数
+            text="追加",
+            width=15,
+            bg="lightblue",
+            command=self.add_click
         )
-        button1.pack()
+        add_button.pack()
 
         # 削除ボタン
-        button2 = tk.Button(
+        delete_button = tk.Button(
             master=self.base,
-            text="削除",  # 初期値
-            width=15,  # 幅
-            bg="lightblue",  # 色
-            command=self.delete_click  # クリックに実行する関数
+            text="削除",
+            width=15,
+            bg="lightblue",
+            command=self.delete_click
         )
-        button2.pack()
+        delete_button.pack()
 
         # 更新ボタン
-        button3 = tk.Button(
+        update_button = tk.Button(
             master=self.base,
-            text="更新",  # 初期値
-            width=15,  # 幅
-            bg="lightblue",  # 色
-            command=self.update_click  # クリックに実行する関数
+            text="更新",
+            width=15,
+            bg="lightblue",
+            command=self.update_click
         )
-        button3.pack()
+        update_button.pack()
 
         # TreeViewの設定
-
         # 列を作る
         self.tree["column"] = (1, 2, 3, 4, 5, 6, 7)
         self.tree["show"] = "headings"
@@ -112,32 +106,30 @@ class RankCheckerGUI:
         self.tree.column(6, width=50)
         self.tree.column(7, width=50)
 
+        # 選択されたTreeviewを取得するための関数をバインド
+        self.tree.bind("<Double-1>", self.OnDoubleClick)
+
         # ツリービューの設置
         self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-        # 選択されたTreeviewを取得するための関数をバインド
-        self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
         self.load_pkl_insert_treeview()
 
         self.base.mainloop()
 
     def update_label(self):
-        # 以下を見て解決すべし
-        # https://stackoverflow.com/questions/17125842/changing-the-text-on-a-label
+
         settings = load_obj()
 
-        self.labeltext = settings["domain"]
-        self.labeltext2 = settings["lang"]
+        self.domain_label["text"] = "【" + settings["domain"] + "】の順位を調べます。"
+        self.lang_label["text"] = "検索エンジンの言語【" + settings["lang"] + "】"
 
-    def on_tree_select(self):
-        self.selected_no = []
-        self.selected_query = []
+    def OnDoubleClick(self, event):
 
-        for item in self.tree.selection():
-            item_text = self.tree.item(item, "values")
-            self.selected_no.append(int(item_text[0]))
-            self.selected_query.append(item_text[1])
+        item = self.tree.identify('item', event.x, event.y)
+        row = self.tree.item(item, "values")
+
+        self.selected_no = int(row[0])
+        self.selected_query = row[1]
 
     def load_pkl_insert_treeview(self):
 
@@ -164,7 +156,7 @@ class RankCheckerGUI:
                 color = "red"
 
             self.tree.insert("", "end", values=(i, df['SearchTerm'][i], df['Ranking'][i], df['Pre'][i], df['Diff'][i],
-                                     df['TargetSite'][i], df['Date'][i]), tags=color)
+                                                df['TargetSite'][i], df['Date'][i]), tags=color)
 
         self.tree.tag_configure("red", foreground='red')
         self.tree.tag_configure("green", foreground='green')
@@ -172,7 +164,7 @@ class RankCheckerGUI:
     def add_click(self):
 
         # 検索語を取得
-        query = self.entryBox.get()
+        query = self.query_entry.get()
 
         # ランキングを検索
         handler = DataFrameHandler(query)
@@ -183,7 +175,7 @@ class RankCheckerGUI:
         else:
             handler.add()
 
-        self.entryBox.delete(0, 'end')
+        self.query_entry.delete(0, 'end')
 
         self.refresh()
 
@@ -196,8 +188,8 @@ class RankCheckerGUI:
 
     def update_click(self):
 
-        handler = DataFrameHandler(self.selected_query[0])
-        handler.update(self.selected_no[0])
+        handler = DataFrameHandler(self.selected_query)
+        handler.update(self.selected_no)
 
         self.refresh()
 
@@ -227,8 +219,8 @@ class RankCheckerGUI:
         label.pack()
 
         # テキストボックス
-        self.entryBox2 = tk.Entry(self.window)
-        self.entryBox2.pack()
+        self.domain_entry = tk.Entry(self.window)
+        self.domain_entry.pack()
 
         # ラベル
         label = tk.Label(self.window, text="検索エンジンの言語を選んでください。")
@@ -254,18 +246,15 @@ class RankCheckerGUI:
     def register_setting(self):
 
         lang = self.lang.get()
-        domain = self.entryBox2.get()
+        domain = self.query_entry.get()
 
         setting = {
             "lang": lang,
             "domain": domain
-             }
+        }
 
         save_obj(setting)
 
         self.window.destroy()
 
         self.update_label()
-
-
-
