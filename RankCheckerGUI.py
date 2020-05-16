@@ -202,7 +202,7 @@ class RankCheckerGUI:
         self.counter += 1
 
         self.window = tk.Toplevel(self.base)
-        self.window.wm_title("Window #%s" % self.counter)
+        self.window.wm_title("RankChecker")
 
         load = Image.open(IMAGE_PATH)
         render = ImageTk.PhotoImage(load)
