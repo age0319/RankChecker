@@ -30,10 +30,10 @@ class RankCheckerGUI:
         self.base.title("RankChecker")
         self.base.geometry("800x800")
 
-        # 設定ボタン
+        # Settings Button
         setting_button = tk.Button(
             master=self.base,
-            text="設定",
+            text="Settings",
             width=15,
             bg="lightblue",
             command=self.setting_window
@@ -43,61 +43,61 @@ class RankCheckerGUI:
 
         settings = load_obj()
 
-        # ラベル
-        self.domain_label["text"] = "【" + settings["domain"] + "】の順位を調べます。"
+        # Label
+        self.domain_label["text"] = "Domain【" + settings["domain"] + "】"
         self.domain_label.pack()
 
-        self.lang_label["text"] = "検索エンジンの言語【" + settings["lang"] + "】"
+        self.lang_label["text"] = "Search Engine Language【" + settings["lang"] + "】"
         self.lang_label.pack()
 
-        # テキストボックス
+        # Query Textbox
         self.query_entry.pack()
 
-        # 追加ボタン
+        # Add Button
         add_button = tk.Button(
             master=self.base,
-            text="追加",
+            text="Add",
             width=15,
             bg="lightblue",
             command=self.add_click
         )
         add_button.pack()
 
-        # 削除ボタン
+        # Delete Button
         delete_button = tk.Button(
             master=self.base,
-            text="削除",
+            text="Delete",
             width=15,
             bg="lightblue",
             command=self.delete_click
         )
         delete_button.pack()
 
-        # 更新ボタン
+        # Update Button
         update_button = tk.Button(
             master=self.base,
-            text="更新",
+            text="Update",
             width=15,
             bg="lightblue",
             command=self.update_click
         )
         update_button.pack()
 
-        # TreeViewの設定
-        # 列を作る
+        # TreeView
+        # Making Columns
         self.tree["column"] = (1, 2, 3, 4, 5, 6, 7)
         self.tree["show"] = "headings"
 
-        # ヘッダーテキスト
+        # Header Text
         self.tree.heading(1, text="No.")
-        self.tree.heading(2, text="検索ワード")
-        self.tree.heading(3, text="ランキング")
-        self.tree.heading(4, text="前回")
-        self.tree.heading(5, text="差分")
-        self.tree.heading(6, text="ドメイン")
-        self.tree.heading(7, text="時間")
+        self.tree.heading(2, text="Search Word")
+        self.tree.heading(3, text="Ranking")
+        self.tree.heading(4, text="Previous")
+        self.tree.heading(5, text="Difference")
+        self.tree.heading(6, text="Domain")
+        self.tree.heading(7, text="Time")
 
-        # 列の幅
+        # columns width
         self.tree.column(1, width=10)
         self.tree.column(2, width=100)
         self.tree.column(3, width=10)
@@ -106,10 +106,10 @@ class RankCheckerGUI:
         self.tree.column(6, width=50)
         self.tree.column(7, width=50)
 
-        # 選択されたTreeviewを取得するための関数をバインド
-        self.tree.bind("<Double-1>", self.OnDoubleClick)
+        # Double Click
+        self.tree.bind("<Double-1>", self.on_double_click)
 
-        # ツリービューの設置
+        # Pack TreeView
         self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         self.load_pkl_insert_treeview()
@@ -120,10 +120,10 @@ class RankCheckerGUI:
 
         settings = load_obj()
 
-        self.domain_label["text"] = "【" + settings["domain"] + "】の順位を調べます。"
-        self.lang_label["text"] = "検索エンジンの言語【" + settings["lang"] + "】"
+        self.domain_label["text"] = "Domain【" + settings["domain"] + "】"
+        self.lang_label["text"] = "Search Engine Language【" + settings["lang"] + "】"
 
-    def OnDoubleClick(self, event):
+    def on_double_click(self, event):
 
         item = self.tree.identify('item', event.x, event.y)
         row = self.tree.item(item, "values")
@@ -136,7 +136,6 @@ class RankCheckerGUI:
         if not os.path.exists(RANKINGS_FILE):
             return
 
-        # 保存したデータフレームの読み込み
         df = pd.read_pickle(RANKINGS_FILE)
 
         if df.empty:
@@ -163,10 +162,8 @@ class RankCheckerGUI:
 
     def add_click(self):
 
-        # 検索語を取得
         query = self.query_entry.get()
 
-        # ランキングを検索
         handler = DataFrameHandler(query)
 
         if not os.path.exists(RANKINGS_FILE):
@@ -194,7 +191,7 @@ class RankCheckerGUI:
         self.refresh()
 
     def refresh(self):
-        # ツリービューの削除
+
         for i in self.tree.get_children():
             self.tree.delete(i)
 
@@ -207,23 +204,19 @@ class RankCheckerGUI:
         self.window = tk.Toplevel(self.base)
         self.window.wm_title("Window #%s" % self.counter)
 
-        # 画像を配置する
         load = Image.open(IMAGE_PATH)
         render = ImageTk.PhotoImage(load)
         img = tk.Label(self.window, image=render)
         img.image = render
         img.pack()
 
-        # ラベル
-        label = tk.Label(self.window, text="順位を調べたいサイトのドメインを入力してください。(例:myblog.com)")
+        label = tk.Label(self.window, text="Please input domain to search.(ex:myblog.com)")
         label.pack()
 
-        # テキストボックス
         self.domain_entry = tk.Entry(self.window)
         self.domain_entry.pack()
 
-        # ラベル
-        label = tk.Label(self.window, text="検索エンジンの言語を選んでください。")
+        label = tk.Label(self.window, text="Please select search engine language.")
         label.pack()
 
         self.lang = tk.StringVar()
@@ -232,10 +225,10 @@ class RankCheckerGUI:
         r2 = tk.Radiobutton(self.window, text='English', variable=self.lang, value='en')
         r2.pack()
 
-        # ドメインの登録ボタン
+        # Domain Register Button
         button = tk.Button(
             master=self.window,
-            text="登録する",
+            text="Register",
             width=15,
             bg="lightblue",
             command=self.register_setting

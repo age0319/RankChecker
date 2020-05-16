@@ -20,18 +20,18 @@ class DataFrameHandler:
     def search_term(self):
 
         try:
-            # 日本語のGoogle検索を行う。言語は日本語。１ページあたりの検索数は10個,50個検索して止める。
+            # Google Search 10 urls per 1 page and stop by 50.
             search_result_list = list(search(self.query, lang=self.lang, num=10, stop=50, pause=1))
         except HTTPError:
             return -1
 
-        # URLリストをデータフレームに格納する
+        # input urls to data frame.
         df = pd.DataFrame(search_result_list, columns=["urls"])
 
-        # サイト内URLを削除する
+        # Delete # containing URLs.
         clean_df = df[(~df.urls.str.contains("#"))].reset_index()
 
-        # ドメインを検索
+        # Search Domain.
         index = clean_df[clean_df.urls.str.contains(self.domain)].index.to_list()
 
         if not index:
