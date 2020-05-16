@@ -1,0 +1,2 @@
+data/ folder is necessary to save data.
+This file was made to keep data folder.
