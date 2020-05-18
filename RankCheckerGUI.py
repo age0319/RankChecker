@@ -107,7 +107,10 @@ class RankCheckerGUI:
         self.tree.column(7, width=50)
 
         # Double Click
-        self.tree.bind("<Double-1>", self.on_double_click)
+        # self.tree.bind("<Double-1>", self.on_double_click)
+
+        # TreeView Select
+        self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
         # Pack TreeView
         self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
@@ -122,6 +125,14 @@ class RankCheckerGUI:
 
         self.domain_label["text"] = "Domain【" + settings["domain"] + "】"
         self.lang_label["text"] = "Search Engine Language【" + settings["lang"] + "】"
+
+    def on_tree_select(self, event):
+
+        for item in self.tree.selection():
+            row = self.tree.item(item, "values")
+            print(row)
+            self.selected_no = int(row[0])
+            self.selected_query = row[1]
 
     def on_double_click(self, event):
 
